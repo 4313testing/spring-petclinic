@@ -16,8 +16,12 @@
 package org.springframework.samples.petclinic.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -146,6 +150,45 @@ public abstract class AbstractClinicServiceTests {
         assertThat(owner6.getPets().size()).isEqualTo(found + 1);
         // checks that id has been generated
         assertThat(pet.getId()).isNotNull();
+
+    }
+
+    @Test
+    public void insertNewPet_DateShiftedByOneDay_Error()
+    {
+        Owner owner6 = this.clinicService.findOwnerById(6);
+        int found = owner6.getPets().size();
+
+        Pet pet = new Pet();
+        pet.setName("bowser");
+        Collection<PetType> types = this.clinicService.findPetTypes();
+        pet.setType(EntityUtils.getById(types, PetType.class, 2));
+        pet.setBirthDate(new DateTime());
+        owner6.addPet(pet);
+        assertThat(owner6.getPets().size()).isEqualTo(found + 1);
+
+        this.clinicService.savePet(pet);
+        this.clinicService.saveOwner(owner6);
+
+        owner6 = this.clinicService.findOwnerById(6);
+        assertThat(owner6.getPets().size()).isEqualTo(found + 1);
+        // checks that id has been generated
+        assertThat(pet.getId()).isNotNull();
+
+        System.out.println("After Saving in DB "+owner6.getPets().get(0).getBirthDate());
+        System.out.println("Before Saving in DB "+pet.getBirthDate());
+
+
+        DateTime dateTime1=owner6.getPets().get(0).getBirthDate();
+        DateTime dateTime2=pet.getBirthDate();
+
+
+
+
+        System.out.println("hours Before: " + dateTime1.getHourOfDay());
+        System.out.println("hours After: " + dateTime2.getHourOfDay());
+//        System.out.println("Difference in minutes: " + minutes);
+        assertFalse(owner6.getPets().get(0).getBirthDate()==pet.getBirthDate());
     }
 
     @Test
