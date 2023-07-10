@@ -118,6 +118,19 @@ class PetControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
+
+
+	// it should fails when date not valid
+	@Test
+	void testProcessUpdateForm_BirthDate_Not_Valid_Fixed() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2030-02-12"))
+			// this means it will stay on the same page without redirection
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
 		mockMvc

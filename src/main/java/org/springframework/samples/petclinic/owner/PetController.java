@@ -89,10 +89,10 @@ class PetController {
 			result.rejectValue("name", "duplicate", "already exists");
 		}
 
-//		LocalDate currentDate = LocalDate.now();
-//		if (pet.getBirthDate() != null && pet.getBirthDate().isAfter(currentDate)) {
-//			result.rejectValue("birthDate", "invalid.date");
-//		}
+		LocalDate currentDate = LocalDate.now();
+		if (pet.getBirthDate() != null && pet.getBirthDate().isAfter(currentDate)) {
+			result.rejectValue("birthDate", "invalid.date");
+		}
 
 
 		owner.addPet(pet);
@@ -115,10 +115,10 @@ class PetController {
 	@PostMapping("/pets/{petId}/edit")
 	public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner, ModelMap model) {
 
-//		LocalDate currentDate = LocalDate.now();
-//		if (pet.getBirthDate() != null && pet.getBirthDate().isAfter(currentDate)) {
-//			result.rejectValue("birthDate", "invalid.date");
-//		}
+		LocalDate currentDate = LocalDate.now();
+		if (pet.getBirthDate() != null && pet.getBirthDate().isAfter(currentDate)) {
+			result.rejectValue("birthDate", "invalid.date");
+		}
 
 
 		if (result.hasErrors()) {
