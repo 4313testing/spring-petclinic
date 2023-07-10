@@ -154,7 +154,7 @@ public abstract class AbstractClinicServiceTests {
     }
 
     @Test
-    public void insertNewPet_DateShiftedByOneDay_Error()
+    public void insertNewPet_Date_Shifted_By_One_Day_Error()
     {
         Owner owner6 = this.clinicService.findOwnerById(6);
         int found = owner6.getPets().size();
@@ -181,7 +181,6 @@ public abstract class AbstractClinicServiceTests {
 
         DateTime dateTime1=owner6.getPets().get(0).getBirthDate();
         DateTime dateTime2=pet.getBirthDate();
-
 
 
 
