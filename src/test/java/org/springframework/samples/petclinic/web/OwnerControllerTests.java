@@ -87,8 +87,8 @@ public class OwnerControllerTests {
         }
 
         //checking if the owner id Above which is 2 is inside the List of IDS
-        //should be false because its creating a new Owner with New ID
-         assertFalse(ids.contains(2));
+        //should be ture because its now updating the same owner
+         assertTrue(ids.contains(2));
 //        Assertions.assertThat(ids.contains(2));
 
     }
