@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
@@ -139,7 +141,7 @@ public abstract class AbstractClinicServiceTests {
         pet.setName("bowser");
         Collection<PetType> types = this.clinicService.findPetTypes();
         pet.setType(EntityUtils.getById(types, PetType.class, 2));
-        pet.setBirthDate(new DateTime());
+        pet.setBirthDate(new LocalDate());
         owner6.addPet(pet);
         assertThat(owner6.getPets().size()).isEqualTo(found + 1);
 
@@ -163,7 +165,7 @@ public abstract class AbstractClinicServiceTests {
         pet.setName("bowser");
         Collection<PetType> types = this.clinicService.findPetTypes();
         pet.setType(EntityUtils.getById(types, PetType.class, 2));
-        pet.setBirthDate(new DateTime());
+        pet.setBirthDate(new LocalDate());
         owner6.addPet(pet);
         assertThat(owner6.getPets().size()).isEqualTo(found + 1);
 
@@ -179,15 +181,15 @@ public abstract class AbstractClinicServiceTests {
         System.out.println("Before Saving in DB "+pet.getBirthDate());
 
 
-        DateTime dateTime1=owner6.getPets().get(0).getBirthDate();
-        DateTime dateTime2=pet.getBirthDate();
+        LocalDate dateTime1=owner6.getPets().get(0).getBirthDate();
+        LocalDate dateTime2=pet.getBirthDate();
 
 
 
-        System.out.println("hours Before: " + dateTime1.getHourOfDay());
-        System.out.println("hours After: " + dateTime2.getHourOfDay());
+//        System.out.println("hours Before: " + dateTime1.getHourOfDay());
+//        System.out.println("hours After: " + dateTime2.getHourOfDay());
 //        System.out.println("Difference in minutes: " + minutes);
-        assertFalse(owner6.getPets().get(0).getBirthDate()==pet.getBirthDate());
+        assertTrue(owner6.getPets().get(0).getBirthDate()==pet.getBirthDate());
     }
 
     @Test
