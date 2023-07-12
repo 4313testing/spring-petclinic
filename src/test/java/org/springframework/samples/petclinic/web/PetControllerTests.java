@@ -105,8 +105,10 @@ public class PetControllerTests {
             )
             //printing the Http Response
             .andDo(print())
-            // Expecting 400 Error Code
-            .andExpect(status().is4xxClientError());
+            //Expecting error message in Pet model
+            .andExpect(model().attributeHasErrors("pet"))
+            // Expecting 200 OK Error Code
+            .andExpect(status().isOk());
 
     }
 

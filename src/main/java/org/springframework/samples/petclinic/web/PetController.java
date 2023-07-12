@@ -97,8 +97,9 @@ public class PetController {
         return "pets/createOrUpdatePetForm";
     }
 
+    // BindingResult should be next to the Pet Model (that have @Valid Annotation)
     @RequestMapping(value = "/pets/{petId}/edit", method = RequestMethod.POST)
-    public String processUpdateForm(@Valid Pet pet, Owner owner, BindingResult result, ModelMap model) {
+    public String processUpdateForm(@Valid Pet pet,BindingResult result, Owner owner, ModelMap model) {
         if (result.hasErrors()) {
             model.put("pet", pet);
             return "pets/createOrUpdatePetForm";
