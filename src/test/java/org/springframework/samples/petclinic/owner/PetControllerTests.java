@@ -1,13 +1,20 @@
 package org.springframework.samples.petclinic.owner;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.assertj.core.util.Lists;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +32,7 @@ import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.owner.PetTypeFormatter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 /**
  * Test class for the {@link PetController}
@@ -122,6 +130,33 @@ public class PetControllerTests {
             .andExpect(model().attributeHasErrors("pet"))
             .andExpect(status().isOk())
             .andExpect(view().name("pets/createOrUpdatePetForm"));
+    }
+
+    @Test
+    public void testProcessUpdateFormHasErrors_Null_Owner_Issue() throws Exception {
+        mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+                .param("name", "Betty")
+
+            // we will pass invalid date (empty date)
+            // birthday is Required
+//                .param("birthDate", "2015/02/12")
+            )
+
+            .andExpect(model().attributeHasErrors("pet"))
+            .andExpect(status().isOk())
+            // check the owner Attributes
+            // check owner Id value is Null
+            .andExpect(model().attribute("owner", hasProperty("id", nullValue())))
+            // check owner FirstName value is Null
+            .andExpect(model().attribute("owner", hasProperty("firstName", nullValue())))
+            // check owner LastName value is Null
+            .andExpect(model().attribute("owner", hasProperty("lastName", nullValue())))
+            //Print The Response
+            .andDo(print())
+
+            .andExpect(view().name("pets/createOrUpdatePetForm"));
+
+
     }
 
 }
