@@ -64,8 +64,14 @@ public class PetControllerTests {
         PetType cat = new PetType();
         cat.setId(3);
         cat.setName("hamster");
+
+        //Adding Owner with FirstName and LastName
+        Owner owner=new Owner();
+        owner.setFirstName("Alex");
+        owner.setLastName("Sam");
+
         given(this.pets.findPetTypes()).willReturn(Lists.newArrayList(cat));
-        given(this.owners.findById(TEST_OWNER_ID)).willReturn(new Owner());
+        given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
         given(this.pets.findById(TEST_PET_ID)).willReturn(new Pet());
 
     }
@@ -133,7 +139,7 @@ public class PetControllerTests {
     }
 
     @Test
-    public void testProcessUpdateFormHasErrors_Null_Owner_Issue() throws Exception {
+    public void testProcessUpdateFormHasErrors_Null_Owner_Issue_Fixed() throws Exception {
         mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
                 .param("name", "Betty")
 
@@ -145,12 +151,11 @@ public class PetControllerTests {
             .andExpect(model().attributeHasErrors("pet"))
             .andExpect(status().isOk())
             // check the owner Attributes
-            // check owner Id value is Null
-            .andExpect(model().attribute("owner", hasProperty("id", nullValue())))
-            // check owner FirstName value is Null
-            .andExpect(model().attribute("owner", hasProperty("firstName", nullValue())))
-            // check owner LastName value is Null
-            .andExpect(model().attribute("owner", hasProperty("lastName", nullValue())))
+
+            // check owner FirstName value is Not Null
+            .andExpect(model().attribute("owner", hasProperty("firstName",is("Alex") )))
+            // check owner LastName value is Not Null
+            .andExpect(model().attribute("owner", hasProperty("lastName", is("Sam"))))
             //Print The Response
             .andDo(print())
 
