@@ -106,11 +106,27 @@ class PetControllerTests {
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 
+	// Bug: processUpdateFormSuccess does unboxed comparison of pet id.  As a result,
+	// the test fails when pet id is greater than 127.
+	// If we add 128 pets, and try to update the 128th pet, the test fails.
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
-		mockMvc
-			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Betty")
+		for (int i = 0; i < 128; i++) {
+			mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Betty")
+					.param("type", "hamster")
+					.param("birthDate", "2015-02-12"));	
+		}
+		
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Bob")
 				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"));	
+
+		// If we compare the 128th pet, id(128) = id(128) will reject because it does not auto-box.
+		// As a result, the update will not happen even though its not a duplicate
+
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Bob")
+				.param("type", "dog")
 				.param("birthDate", "2015-02-12"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
