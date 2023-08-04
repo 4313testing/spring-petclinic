@@ -38,7 +38,7 @@ public class VetControllerTests {
 
 
     @Test
-    public void testViewAsXmlButton() throws Exception {
+    public void testViewAsXmlButton_fixed() throws Exception {
         // Perform the first request to view the page containing the button
         MvcResult result = mockMvc.perform(get("/vets.html"))
             .andExpect(status().isOk())
@@ -60,8 +60,8 @@ public class VetControllerTests {
         // Perform the second request to view the XML content
         mockMvc.perform(get(xmlUrl))
             .andExpect(status().isOk())
-            // It Should XML Instead of Html
-            .andExpect(content().contentType("text/html;charset=UTF-8"))
+            // Return XMl Content Type as Expected
+            .andExpect(content().contentType("application/xml"))
             .andDo(xmlResult -> {
                 // Here you can check the XML response content if needed
                 String xmlContent = xmlResult.getResponse().getContentAsString();
