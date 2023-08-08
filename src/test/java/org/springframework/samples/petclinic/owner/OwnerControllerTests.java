@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.owner;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -10,9 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.assertj.core.util.Lists;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -41,8 +45,15 @@ public class OwnerControllerTests {
 
     private Owner george;
 
+    private WebDriver driver;
+
     @Before
     public void setup() {
+        // Set up WebDriver for Chrome
+        System.setProperty("webdriver.chrome.driver", "D:\\Users\\Haroun\\Videos\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+        driver = new ChromeDriver();
+
+
         george = new Owner();
         george.setId(TEST_OWNER_ID);
         george.setFirstName("George");
@@ -176,4 +187,24 @@ public class OwnerControllerTests {
             .andExpect(view().name("owners/ownerDetails"));
     }
 
+
+    @Test
+    public void testNullointerExceptionWithSelenium() throws Exception {
+
+        driver.get("http://localhost:8080/owners/56/edit");
+        // it should be instead vets.xml
+        assertThat(driver.getCurrentUrl().equals("http://localhost:8080/oups"));
+
+    }
+
+    @After
+    public void tearDown() {
+        // Close the browser after each test
+        try {
+            Thread.sleep(5000); // Sleep for 3 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace(); // Handle the exception if needed
+        }
+        driver.quit();
+    }
 }
