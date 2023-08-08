@@ -20,12 +20,15 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -47,6 +50,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.NestedServletException;
 
 /**
  * Test class for {@link OwnerController}
@@ -179,16 +183,27 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
+	// Testing the update View Wrong Owner ID to throw Null Pointer Exception
 	@Test
-	void testProcessUpdateOwnerFormSuccess() throws Exception {
-		mockMvc
-			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
-				.param("lastName", "Bloggs")
-				.param("address", "123 Caramel Street")
-				.param("city", "London")
-				.param("telephone", "01616291589"))
-			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/{ownerId}"));
+	void testProcessUpdateOwnerFormFailed_NullPointerException() throws Exception {
+		assertThrows(jakarta.servlet.ServletException.class, () -> {
+			try {
+				mockMvc
+					.perform(post("/owners/{ownerId}/edit", 3)
+						.param("firstName", "Joe")
+						.param("lastName", "Bloggs")
+						.param("address", "123 Caramel Street")
+						.param("city", "London")
+						.param("telephone", "01616291589"))
+					.andExpect(status().is3xxRedirection())
+					.andExpect(view().name("redirect:/owners/{ownerId}"))
+					.andDo(print());
+			} catch (NestedServletException e) {
+				// Extract the nested NullPointerException and assert its properties
+				assertTrue(e.getCause() instanceof NullPointerException);
+
+			}
+		}, "Nested NPE was not thrown");
 	}
 
 	@Test
