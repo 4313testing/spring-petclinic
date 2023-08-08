@@ -1,7 +1,13 @@
 package org.springframework.samples.petclinic.owner;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.jsoup.Jsoup;
@@ -29,6 +36,8 @@ import org.jsoup.nodes.Element;
 @WebMvcTest(VetController.class)
 public class VetControllerTests {
 
+    private WebDriver driver;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -36,6 +45,13 @@ public class VetControllerTests {
     @MockBean
     private VetRepository vets;
 
+
+    @Before
+    public void setUp() {
+        // Set up WebDriver for Chrome
+        System.setProperty("webdriver.chrome.driver", "D:\\Users\\Haroun\\Videos\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+        driver = new ChromeDriver();
+    }
 
     @Test
     public void testViewAsXmlButton() throws Exception {
@@ -67,6 +83,63 @@ public class VetControllerTests {
                 String xmlContent = xmlResult.getResponse().getContentAsString();
 
             });
+    }
+
+    @Test
+    public void testViewAsXmlButtonWithSelenium() throws Exception {
+
+        driver.get("http://localhost:8080/vets.html");
+
+        // Find the "View as JSON" link using Selenium
+        WebElement viewAsJsonLink = driver.findElement(By.linkText("View as JSON"));
+
+        //Testing View as JSON works
+        try {
+            Thread.sleep(2000); // Sleep for 2 seconds
+            viewAsJsonLink.click();
+        } catch (InterruptedException e) {
+            e.printStackTrace(); // Handle the exception if needed
+        }
+
+
+
+        //Now Going back to vet List for Testing View as Xml button
+        try {
+            Thread.sleep(3000); // Sleep for 3 seconds
+            driver.get("http://localhost:8080/vets.html");
+        } catch (InterruptedException e) {
+            e.printStackTrace(); // Handle the exception if needed
+        }
+
+        // Find the "View as XML" link using Selenium
+        WebElement viewAsXmlLink = driver.findElement(By.linkText("View as XML"));
+
+        // Assert that the link is present
+        assertNotNull(viewAsXmlLink);
+
+        // Click on the link to view the XML content
+        try {
+            Thread.sleep(2000); // Sleep for 2 seconds
+            viewAsXmlLink.click();
+        } catch (InterruptedException e) {
+            e.printStackTrace(); // Handle the exception if needed
+        }
+
+
+        // it should be instead vets.xml
+        assertThat(driver.getCurrentUrl().equals("http://localhost:8080/vets.html"));
+
+    }
+
+    @After
+    public void tearDown() {
+        // Close the browser after each test
+        try {
+            Thread.sleep(3000); // Sleep for 3 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace(); // Handle the exception if needed
+        }
+        driver.quit();
     }
 
 }
